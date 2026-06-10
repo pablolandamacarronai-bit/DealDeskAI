@@ -36,9 +36,19 @@ export default function App() {
 
     let unsubDeals, unsubSocs;
 
+    // Fallback: if Firebase doesn't respond in 6s, use local data
+    const timeout = setTimeout(() => {
+      console.warn('Firebase timeout — using local data');
+      setSyncError(true);
+      setDeals(SEED_DEALS);
+      setSocieties(SEED_SOCIETIES);
+      setLoading(false);
+    }, 6000);
+
     seedIfEmpty()
       .then(() => {
         unsubDeals = subscribeDeals((data) => {
+          clearTimeout(timeout);
           setDeals(data);
           setLoading(false);
         });
@@ -47,6 +57,7 @@ export default function App() {
         });
       })
       .catch((err) => {
+        clearTimeout(timeout);
         console.error('Firebase error:', err);
         setSyncError(true);
         setDeals(SEED_DEALS);
@@ -55,6 +66,7 @@ export default function App() {
       });
 
     return () => {
+      clearTimeout(timeout);
       unsubDeals?.();
       unsubSocs?.();
     };
