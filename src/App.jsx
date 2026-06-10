@@ -43,7 +43,7 @@ export default function App() {
       setDeals(SEED_DEALS);
       setSocieties(SEED_SOCIETIES);
       setLoading(false);
-    }, 6000);
+    }, 15000);
 
     seedIfEmpty()
       .then(() => {
